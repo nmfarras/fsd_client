@@ -1,0 +1,1 @@
+Update 2024-06-05 1416 not collecting all aircraft into single array.
