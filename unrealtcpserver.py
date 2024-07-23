@@ -7,6 +7,13 @@ import json
 # Lock for thread safety
 client_connections_lock = threading.Lock()
 
+def get_local_ipv4():
+    s_computer = s.socket(s.AF_INET, s.SOCK_DGRAM)
+    s_computer.connect(("8.8.8.8", 80))
+    local_ip = s_computer.getsockname()[0]
+    s_computer.close()
+    return local_ip
+    
 # Class to represent client connections
 class ClientConnection:
     def __init__(self, client_socket, client_address):
@@ -79,7 +86,10 @@ def broadcast_json_data(json_data_list):
 
 # Function to start TCP server
 def start_tcp_server(exit_event):
-    server_address = ('127.0.0.1', 9999)
+    my_ip = get_local_ipv4()
+    # server_address = ('127.0.0.1', 9999)
+    server_address = ('0.0.0.0', 9999)
+    # server_address = (my_ip, 9999)
     server = s.socket(s.AF_INET, s.SOCK_STREAM)
     
     try:

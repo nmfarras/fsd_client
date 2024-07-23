@@ -102,6 +102,8 @@ def start_fsd_client(exit_event):
 
     message = "#AAUNREAL:SERVER:Unreal:00000:22222:1:100\r\n$CQUNREAL:@94835:SIMDATA:1"
     buffer = b''
+    
+    messageMetar = "$AXUNREAL:SERVER:METAR:WIHH"
 
     while not exit_event.is_set():
         try:
@@ -130,6 +132,8 @@ def start_fsd_client(exit_event):
                             buffer, json_data_list = process_received_data(buffer)
 
                             broadcast_json_data(json_data_list)
+                            
+                            # connection.sendall(str.encode(messageMetar))
 
                         # while b'\r\n' in buffer:
                             # buffer, json_data_list = process_received_data(buffer)                        
