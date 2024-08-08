@@ -6,6 +6,7 @@ import re
 from threading import Event
 from sim_data import SimData
 from unrealtcpserver import broadcast_json_data
+from utility import check_active_emergency_flags, check_active_light_flags
 
 # Global dictionary to store aircraft data
 aircraft_list = {}
@@ -67,6 +68,9 @@ def process_received_data(buffer):
             emergency_flag = emergency_flag.decode()
             airport_altitude = airport_altitude.decode()
             lamp_flag = lamp_flag.decode()
+            
+            active_emergency_flags = check_active_emergency_flags(int(emergency_flag))
+            active_light_flags = check_active_light_flags(int(lamp_flag))
 
             # Check if a SimData instance with the call_sign already exists
             if call_sign in SimData._instances:
@@ -74,18 +78,19 @@ def process_received_data(buffer):
                 sim_data = SimData._instances[call_sign]
                 sim_data.update(aircraft_type, liveries, sim_time, latitude, longitude, current_altitude,
                                 heading, roll, pitch, ground_speed, is_on_the_ground, ils_in_range, maneuver,
-                                emergency_flag, airport_altitude, lamp_flag)
+                                active_emergency_flags, airport_altitude, active_light_flags)
             else:
                 # Create a new SimData instance
                 sim_data = SimData(call_sign, aircraft_type, liveries, sim_time, latitude, longitude, current_altitude,
                                    heading, roll, pitch, ground_speed, is_on_the_ground, ils_in_range, maneuver,
-                                   emergency_flag, airport_altitude, lamp_flag)
+                                   active_emergency_flags, airport_altitude, active_light_flags)
 
             # Update the global aircraft_list
             aircraft_list[call_sign] = sim_data.to_dict()
             # json_data_list.append(sim_data.to_dict())
             json_data_list = list(aircraft_list.values())
             
+            # print(aircraft_list["LNI444"])
             # for sebugging
             # print("Dict parsing data:", aircraft_list)
             
